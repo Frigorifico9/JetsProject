@@ -1,0 +1,45 @@
+#PBS -N py64
+
+# Specific the shell types
+#PBS -S /bin/bash
+
+# Specific the queue type
+#PBS -q icn
+
+# Archivo de salida
+#PBS -o /storage/alice/frigorifico/jetsProject/outPutAndError/output.log
+
+
+# Archivo de salida de error
+#PBS -e /storage/alice/frigorifico/jetsProject/outPutAndError/error.log
+
+##PBS -l walltime=2400:00:00
+##PBS -l cput=2400:00:00
+
+echo "-------------------Nodo --------------------------------------------------------------"
+/bin/hostname
+
+echo "-------------------Directorio iniciar de trabajo--------------------------------------"
+pwd
+
+echo "-------------------Trabajo------------------------------------------------------------"
+cd /storage/alice/frigorifico/jetsProject/
+if [ -d /storage/alice/frigorifico/jetsProject/JOBS/$JOBID ]; then
+    rm -rf /storage/alice/frigorifico/jetsProject/JOBS/$JOBID
+fi
+    mkdir -p JOBS/$JOBID
+
+
+cd /storage/alice/frigorifico/jetsProject/JOBS/$JOBID
+
+cp /storage/alice/frigorifico/jetsProject/forCluster/myjets.cc .
+cp /storage/alice/frigorifico/jetsProject/allSettings/seetings$JOBID.cmnd .
+cp /storage/alice/frigorifico/jetsProject/forCluster/Makefile .
+cp /storage/alice/frigorifico/jetsProject/forCluster/Makefile.inc .
+cp /storage/alice/frigorifico/jetsProject/forCluster/executeGen.sh .
+
+cp seetings$JOBID.cmnd /storage/alice/frigorifico/jetsProject/forCluster/seetings.cmnd
+cp seetings$JOBID.cmnd /storage/alice/frigorifico/jetsProject/JOBS/seetings.cmnd
+mv seetings$JOBID.cmnd seetings.cmnd
+
+source executeGen.sh 2>&1 | tee sim.log
